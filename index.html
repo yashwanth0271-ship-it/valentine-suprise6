@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Be My Valentine 💖</title>
+<style>
+body{
+  margin:0;
+  text-align:center;
+  font-family:'Comic Sans MS',cursive;
+  background:linear-gradient(135deg,#ffd6e8,#ffe6f2,#fff0f5);
+  overflow:hidden;
+}
+
+h1{
+  margin-top:50px;
+  font-size:3rem;
+  color:#ff1493;
+  text-shadow:2px 2px 8px white;
+}
+
+button{
+  padding:16px 40px;
+  font-size:22px;
+  border-radius:12px;
+  border:none;
+  cursor:pointer;
+  margin:25px;
+}
+
+#yesBtn{background:#ff007f;color:white;}
+#noBtn{background:white;color:#ff007f;border:2px solid #ff007f;position:relative;}
+
+.message{
+  position:absolute;
+  font-size:22px;
+  font-weight:bold;
+  animation:fadeOut 3s forwards;
+}
+
+@keyframes fadeOut{
+  0%{opacity:1;transform:translateY(0);}
+  100%{opacity:0;transform:translateY(-60px);}
+}
+
+.flower{
+  position:absolute;
+  font-size:26px;
+  animation:float 6s linear infinite;
+}
+@keyframes float{
+  0%{transform:translateY(100vh);}
+  100%{transform:translateY(-10vh);}
+}
+
+canvas{position:absolute;top:0;left:0;pointer-events:none;}
+</style>
+</head>
+<body>
+
+<h1>Will You Be My Valentine? 💖</h1>
+
+<button id="yesBtn">Yes</button>
+<button id="noBtn">No</button>
+
+<audio autoplay loop>
+  <source src="https://www.bensound.com/bensound-music/bensound-love.mp3" type="audio/mp3">
+</audio>
+
+<canvas id="effects"></canvas>
+
+<script>
+const noBtn=document.getElementById("noBtn");
+const yesBtn=document.getElementById("yesBtn");
+let count=0;
+
+const messages=[
+"Bangaram one na sweety kadha ❤️",
+"Buji kadha 💕",
+"Na mudula pellama kadha 💌",
+"Na buji bangaram sweety kadha 💖",
+"Last chance! Click YES 😘"
+];
+
+const colors=["#ff0066","#ff1493","#ff69b4","#ff3399","#ff007f","#ff66cc"];
+
+noBtn.onmouseenter=()=>{
+  const x=Math.random()*(window.innerWidth-120);
+  const y=Math.random()*(window.innerHeight-120);
+  noBtn.style.position="absolute";
+  noBtn.style.left=x+"px";
+  noBtn.style.top=y+"px";
+
+  let msg=document.createElement("div");
+  msg.className="message";
+  msg.innerText=messages[count%messages.length];
+  msg.style.color=colors[Math.floor(Math.random()*colors.length)];
+  msg.style.left=(x+20)+"px";
+  msg.style.top=(y-10)+"px";
+  document.body.appendChild(msg);
+  setTimeout(()=>msg.remove(),3000);
+
+  count++;
+  if(count>=5) yesBtn.click();
+};
+
+// Floating flowers
+function flower(){
+ let f=document.createElement("div");
+ f.className="flower";
+ f.innerHTML="🌸";
+ f.style.left=Math.random()*100+"vw";
+ f.style.animationDuration=(3+Math.random()*3)+"s";
+ document.body.appendChild(f);
+ setTimeout(()=>f.remove(),6000);
+}
+setInterval(flower,400);
+
+// Confetti / Fireworks
+const canvas=document.getElementById("effects");
+const ctx=canvas.getContext("2d");
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
+let particles=[];
+
+function Particle(x,y){
+ this.x=x; this.y=y; this.size=6;
+ this.speedX=Math.random()*8-4;
+ this.speedY=Math.random()*8-4;
+ this.color=`hsl(${Math.random()*360},100%,50%)`;
+}
+Particle.prototype.update=function(){
+ this.x+=this.speedX;
+ this.y+=this.speedY;
+ this.size*=0.95;
+};
+Particle.prototype.draw=function(){
+ ctx.fillStyle=this.color;
+ ctx.fillRect(this.x,this.y,this.size,this.size);
+};
+
+function explode(x,y){
+ for(let i=0;i<120;i++)
+  particles.push(new Particle(x,y));
+}
+
+function animate(){
+ ctx.clearRect(0,0,canvas.width,canvas.height);
+ particles.forEach((p,i)=>{
+  p.update(); p.draw();
+  if(p.size<0.5) particles.splice(i,1);
+ });
+ requestAnimationFrame(animate);
+}
+animate();
+
+yesBtn.onclick=()=>{
+ for(let i=0;i<8;i++)
+  setTimeout(()=>explode(Math.random()*canvas.width,Math.random()*canvas.height),i*300);
+setTimeout(()=>window.location.href="thankyou.html",3500); 
+};
+</script>
+
+</body>
+</html>
